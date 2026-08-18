@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en" class="dark scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CINEPHIX 2026 | Cyber-Cinematic Tech Ideathon</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#040508',
+                            surface: '#0B0D14',
+                            card: '#121624',
+                            border: 'rgba(0, 240, 255, 0.15)',
+                            cyan: '#00F0FF',
+                            crimson: '#FF0055',
+                            gold: '#FFB800',
+                            purple: '#9D00FF',
+                            text: '#E2E8F0',
+                            muted: '#64748B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                        display: ['Space Grotesk', 'sans-serif']
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'scanline': 'scanline 8s linear infinite',
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 3s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        scanline: {
+                            '0%': { transform: 'translateY(-100%)' },
+                            '100%': { transform: 'translateY(1000%)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) rotate(0deg)' },
+                            '50%': { transform: 'translateY(-10px) rotate(0.5deg)' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 15px rgba(0, 240, 255, 0.2)' },
+                            '100%': { boxShadow: '0 0 35px rgba(0, 240, 255, 0.6), 0 0 15px rgba(255, 0, 85, 0.4)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@500;700;800;900&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #040508;
+            color: #E2E8F0;
+            overflow-x: hidden;
+        }
+        .font-display { font-family: 'Space Grotesk', sans-serif; }
+        .font-mono { font-family: 'JetBrains Mono', monospace; }
+
+        /* HUD Glassmorphism */
+        .hud-glass {
+            background: rgba(11, 13, 20, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(0, 240, 255, 0.18);
+            box-shadow: inset 0 0 20px rgba(0, 240, 255, 0.03);
+        }
+        .hud-glass-red {
+            background: rgba(18, 10, 15, 0.8);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 0, 85, 0.25);
+            box-shadow: inset 0 0 20px rgba(255, 0, 85, 0.05);
+        }
+        .hud-interactive {
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .hud-interactive:hover {
+            border-color: rgba(0, 240, 255, 0.6);
+            box-shadow: 0 0 25px rgba(0, 240, 255, 0.25), inset 0 0 15px rgba(0, 240, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Cyber Grids & Lines */
+        .cyber-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(0, 240, 255, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(0, 240, 255, 0.04) 1px, transparent 1px);
+        }
+
+        .neon-text-cyan { text-shadow: 0 0 12px rgba(0, 240, 255, 0.7); }
+        .neon-text-crimson { text-shadow: 0 0 12px rgba(255, 0, 85, 0.7); }
+        .neon-text-gold { text-shadow: 0 0 12px rgba(255, 184, 0, 0.7); }
+
+        /* Film Roll Scrubber */
+        .film-sprocket {
+            background-image: radial-gradient(circle, #040508 40%, transparent 45%);
+            background-size: 16px 16px;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #040508; }
+        ::-webkit-scrollbar-thumb { background: #1E293B; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #00F0FF; }
+
+        /* Holographic Badge Card FX */
+        .holo-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(0,240,255,0.08) 50%, rgba(255,0,85,0.05) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .holo-card::after {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%; width: 200%; height: 200%;
+            background: linear-gradient(60deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
+            transform: rotate(25deg);
+            pointer-events: none;
+            animation: holoSweep 6s infinite linear;
+        }
+        @keyframes holoSweep {
+            0% { transform: translateY(-100%) rotate(25deg); }
+            100% { transform: translateY(100%) rotate(25deg); }
+        }
+    </style>
+</head>
+<body class="selection:bg-cyber-cyan selection:text-black antialiased">
+
+    <!-- Interactive Anamorphic Lens & Particle Canvas -->
+    <canvas id="cinema-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
+    
+    <!-- Cyber Grid Mask -->
+    <div class="fixed inset-0 cyber-grid pointer-events-none z-0"></div>
+
+    <!-- Scanline Overlay -->
+    <div class="fixed inset-0 pointer-events-none z-50 overflow-hidden opacity-20">
+        <div class="w-full h-24 bg-gradient-to-b from-transparent via-cyber-cyan/20 to-transparent animate-scanline"></div>
+    </div>
+
+    <!-- Navigation Header HUD -->
+    <header class="fixed top-0 left-0 right-0 z-40 px-4 lg:px-8 py-3 transition-all duration-300">
+        <div class="max-w-7xl mx-auto hud-glass rounded-2xl px-5 py-3 flex items-center justify-between">
+            
+            <!-- Brand Logo with Timecode -->
+            <a href="#" class="flex items-center gap-4 group" onclick="playAudio('click')">
+                <div class="relative w-10 h-10 rounded-xl bg-black border border-cyber-cyan/50 flex items-center justify-center text-cyber-cyan overflow-hidden group-hover:border-cyber-cyan transition-colors">
+                    <div class="absolute inset-0 bg-cyber-cyan/10 group-hover:bg-cyber-cyan/20 transition-colors"></div>
+                    <i data-lucide="aperture" class="w-5 h-5 animate-spin-slow"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="font-display font-black text-xl tracking-wider text-white">CINE<span class="text-cyber-cyan neon-text-cyan">PHIX</span></span>
+                        <span class="px-1.5 py-0.5 rounded bg-cyber-crimson/20 border border-cyber-crimson/50 text-[10px] font-mono text-cyber-crimson uppercase tracking-widest">LIVE HUD</span>
+                    </div>
+                    <div class="text-[10px] font-mono text-cyber-muted tracking-widest flex items-center gap-2">
+                        <span>SYS.ID // 2026</span>
+                        <span class="text-cyber-cyan/70" id="timecode-ticker">00:00:00:00</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- HUD Quick Links -->
+            <nav class="hidden md:flex items-center space-x-1 text-xs font-mono tracking-wider text-gray-300">
+                <a href="#director-deck text-gray-300" onclick="playAudio('hover')" class="px-4 py-2 rounded-lg hover:bg-cyber-cyan/10 hover:text-cyber-cyan transition-all">[01] DECKS</a>
+                <a href="#film-timeline" onclick="playAudio('hover')" class="px-4 py-2 rounded-lg hover:bg-cyber-cyan/10 hover:text-cyber-cyan transition-all">[02] TIMELINE</a>
+                <a href="#prizes" onclick="playAudio('hover')" class="px-4 py-2 rounded-lg hover:bg-cyber-cyan/10 hover:text-cyber-cyan transition-all">[03] BOUNTIES</a>
+                <a href="#faq" onclick="playAudio('hover')" class="px-4 py-2 rounded-lg hover:bg-cyber-cyan/10 hover:text-cyber-cyan transition-all">[04] PROTOCOLS</a>
+            </nav>
+
+            <!-- Audio Sound FX Toggle & Registration Trigger -->
+            <div class="flex items-center gap-3">
+                <!-- Sound Toggle -->
+                <button id="sound-btn" onclick="toggleAudio()" class="p-2.5 rounded-xl bg-black/60 border border-cyber-border text-cyber-muted hover:text-cyber-cyan hover:border-cyber-cyan transition-all" title="Toggle Interactive Audio">
+                    <i id="sound-icon" data-lucide="volume-x" class="w-4 h-4"></i>
+                </button>
+
+                <!-- Primary CTA -->
+                <button onclick="openRegistrationModal()" class="relative inline-flex items-center justify-center px-5 py-2.5 text-xs font-mono font-bold tracking-wider text-black bg-cyber-cyan rounded-xl hover:bg-white transition-all shadow-lg shadow-cyber-cyan/25 hover:shadow-cyber-cyan/50 active:scale-95">
+                    <i data-lucide="zap" class="w-4 h-4 mr-1.5 fill-black"></i> INIT_REGISTRATION
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative pt-32 pb-20 md:pt-40 md:pb-28 z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                
+                <!-- Hero Left Column: Vision Pitch -->
+                <div class="lg:col-span-7 space-y-6 text-left">
+                    
+                    <!-- Status Tag -->
+                    <div class="inline-flex items-center gap-3 px-3.5 py-1.5 rounded-full hud-glass border-cyber-cyan/40 text-cyber-cyan text-xs font-mono">
+                        <span class="w-2 h-2 rounded-full bg-cyber-cyan animate-ping"></span>
+                        <span class="tracking-wide">GLOBAL CREATIVE TECH HACKATHON</span>
+                        <span class="text-cyber-muted">|</span>
+                        <span class="text-cyber-gold font-bold">48 HOURS</span>
+                    </div>
+
+                    <!-- Main Kinetic Title -->
+                    <h1 class="font-display text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white leading-tight">
+                        RECODE THE <br>
+                        <span class="bg-gradient-to-r from-cyber-cyan via-white to-cyber-crimson bg-clip-text text-transparent neon-text-cyan">
+                            CINEMATIC REALM
+                        </span>
+                    </h1>
+
+                    <p class="text-base sm:text-lg text-cyber-muted leading-relaxed max-w-2xl font-sans">
+                        A cybernetic convergence of filmmaking, Generative AI, real-time spatial rendering, and interactive story engines. Build the future of entertainment in 48 hours.
+                    </p>
+
+                    <!-- Key Event Metrics Ribbon -->
+                    <div class="grid grid-cols-3 gap-3 pt-2">
+                        <div class="hud-glass rounded-xl p-3.5 border-l-2 border-l-cyber-cyan">
+                            <div class="text-[10px] font-mono text-cyber-muted uppercase">Prize Pool</div>
+                            <div class="font-display text-xl sm:text-2xl font-bold text-white neon-text-gold">₹10,000</div>
+                        </div>
+                        <div class="hud-glass rounded-xl p-3.5 border-l-2 border-l-cyber-crimson">
+                            <div class="text-[10px] font-mono text-cyber-muted uppercase">Squad Size</div>
+                            <div class="font-display text-xl sm:text-2xl font-bold text-white">1 - 4 Members</div>
+                        </div>
+                        <div class="hud-glass rounded-xl p-3.5 border-l-2 border-l-cyber-purple">
+                            <div class="text-[10px] font-mono text-cyber-muted uppercase">Deadline</div>
+                            <div class="font-display text-xl sm:text-2xl font-bold text-cyber-cyan">AUG 23, 2026</div>
+                        </div>
+                    </div>
+
+                    <!-- CTA Action Buttons -->
+                    <div class="flex flex-col sm:flex-row items-center gap-4 pt-4">
+                        <button onclick="openRegistrationModal()" class="w-full sm:w-auto px-8 py-4 bg-gradient-to-r from-cyber-cyan to-blue-500 text-black font-mono font-bold text-sm tracking-wider rounded-xl shadow-lg shadow-cyber-cyan/30 hover:brightness-125 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="terminal" class="w-4 h-4"></i> APPLY NOW (FREE ENTRY)
+                        </button>
+
+                        <a href="#director-deck" onclick="playAudio('click')" class="w-full sm:w-auto px-8 py-4 hud-glass text-white font-mono text-sm tracking-wider rounded-xl hover:border-cyber-cyan transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="disc" class="w-4 h-4 text-cyber-cyan"></i> EXPLORE TRACKS
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Hero Right Column: Dynamic Interactive Lens Radar & Countdown Hud -->
+                <div class="lg:col-span-5">
+                    <div class="hud-glass-red rounded-3xl p-6 sm:p-8 relative overflow-hidden animate-float">
+                        
+                        <!-- Viewfinder Reticle Corners -->
+                        <div class="absolute top-3 left-3 w-4 h-4 border-t-2 border-l-2 border-cyber-crimson"></div>
+                        <div class="absolute top-3 right-3 w-4 h-4 border-t-2 border-r-2 border-cyber-crimson"></div>
+                        <div class="absolute bottom-3 left-3 w-4 h-4 border-b-2 border-l-2 border-cyber-crimson"></div>
+                        <div class="absolute bottom-3 right-3 w-4 h-4 border-b-2 border-r-2 border-cyber-crimson"></div>
+
+                        <!-- Top Viewfinder Header -->
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-crimson mb-6 border-b border-cyber-crimson/20 pb-3">
+                            <span class="flex items-center gap-1.5"><span class="w-2 h-2 rounded-full bg-cyber-crimson animate-ping"></span> REC [RAW 8K]</span>
+                            <span class="text-white">FPS: 120.0</span>
+                            <span>ISO 800</span>
+                        </div>
+
+                        <!-- Countdown Clock Display -->
+                        <div class="text-center my-4">
+                            <div class="text-[11px] font-mono text-cyber-muted uppercase tracking-widest mb-3">COUNTDOWN TO PROTOCOL DEADLINE</div>
+                            
+                            <div class="grid grid-cols-4 gap-2 text-center" id="countdown-deck">
+                                <div class="bg-black/80 border border-cyber-border rounded-xl p-3">
+                                    <span id="days" class="font-display text-2xl sm:text-3xl font-black text-white">00</span>
+                                    <span class="block text-[10px] font-mono text-cyber-muted mt-1">DAYS</span>
+                                </div>
+                                <div class="bg-black/80 border border-cyber-border rounded-xl p-3">
+                                    <span id="hours" class="font-display text-2xl sm:text-3xl font-black text-white">00</span>
+                                    <span class="block text-[10px] font-mono text-cyber-muted mt-1">HRS</span>
+                                </div>
+                                <div class="bg-black/80 border border-cyber-border rounded-xl p-3">
+                                    <span id="minutes" class="font-display text-2xl sm:text-3xl font-black text-white">00</span>
+                                    <span class="block text-[10px] font-mono text-cyber-muted mt-1">MIN</span>
+                                </div>
+                                <div class="bg-black/80 border border-cyber-border rounded-xl p-3">
+                                    <span id="seconds" class="font-display text-2xl sm:text-3xl font-black text-cyber-crimson">00</span>
+                                    <span class="block text-[10px] font-mono text-cyber-muted mt-1">SEC</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Live Registrations Meter -->
+                        <div class="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-xs font-mono">
+                            <span class="text-cyber-muted">APPLICATIONS LOGGED:</span>
+                            <span class="text-cyber-gold font-bold flex items-center gap-1">
+                                <i data-lucide="users" class="w-3.5 h-3.5"></i> <span id="app-count">482</span> SQUADS
+                            </span>
+                        </div>
+
+                        <!-- Terminal Output Line -->
+                        <div class="mt-3 p-2.5 rounded-lg bg-black/90 font-mono text-[11px] text-cyber-cyan border border-cyber-cyan/20 flex items-center justify-between">
+                            <span class="truncate">> SYSTEM_STATUS: ACCEPTING_PROPOSALS...</span>
+                            <span class="w-2 h-4 bg-cyber-cyan animate-pulse"></span>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Track Selector: The Director's Deck -->
+    <section id="director-deck" class="py-24 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <!-- Section Title -->
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-xs font-mono text-cyber-cyan uppercase tracking-widest mb-2">[ SECTOR 01: INNOVATION MATRIX ]</div>
+                <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white">SELECT YOUR CREATIVE TRACK</h2>
+                <p class="text-cyber-muted mt-3 font-sans text-sm">Click any deck matrix module to examine technical stack targets, pitch ideas, and launch initial specs.</p>
+            </div>
+
+            <!-- Dynamic Track Matrix Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Track Module 1 -->
+                <div onclick="selectTrackModule(1)" class="hud-glass rounded-2xl p-6 hud-interactive cursor-pointer group border-t-2 border-t-cyber-cyan relative" id="track-card-1">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-cyber-cyan/10 border border-cyber-cyan/40 text-cyber-cyan flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i data-lucide="brain-circuit" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-xs text-cyber-cyan font-bold">TRACK_01</span>
+                    </div>
+
+                    <h3 class="font-display text-xl font-bold text-white mb-2 group-hover:text-cyber-cyan transition-colors">AI Pre & Post-Production</h3>
+                    <p class="text-xs text-cyber-muted leading-relaxed mb-6 font-sans">
+                        Generative video pipeline tools, automated scene color grading models, AI dialogue synch, and neural pre-visualization engines.
+                    </p>
+
+                    <!-- Tech Badges -->
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">PyTorch</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Stable Diffusion</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">FFmpeg</span>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-cyber-cyan">
+                        <span>INSPECT SPECIFICATIONS</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Track Module 2 -->
+                <div onclick="selectTrackModule(2)" class="hud-glass rounded-2xl p-6 hud-interactive cursor-pointer group border-t-2 border-t-cyber-crimson relative" id="track-card-2">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-cyber-crimson/10 border border-cyber-crimson/40 text-cyber-crimson flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i data-lucide="glasses" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-xs text-cyber-crimson font-bold">TRACK_02</span>
+                    </div>
+
+                    <h3 class="font-display text-xl font-bold text-white mb-2 group-hover:text-cyber-crimson transition-colors">Interactive & Spatial Cinema</h3>
+                    <p class="text-xs text-cyber-muted leading-relaxed mb-6 font-sans">
+                        Spatial XR story worlds, non-linear interactive film narratives, spatial audio engines, and Apple Vision / Meta Quest experiences.
+                    </p>
+
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Three.js / WebXR</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Unreal Engine</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Spatial Audio</span>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-cyber-crimson">
+                        <span>INSPECT SPECIFICATIONS</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Track Module 3 -->
+                <div onclick="selectTrackModule(3)" class="hud-glass rounded-2xl p-6 hud-interactive cursor-pointer group border-t-2 border-t-cyber-gold relative" id="track-card-3">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-cyber-gold/10 border border-cyber-gold/40 text-cyber-gold flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i data-lucide="tv-2" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-xs text-cyber-gold font-bold">TRACK_03</span>
+                    </div>
+
+                    <h3 class="font-display text-xl font-bold text-white mb-2 group-hover:text-cyber-gold transition-colors">Smart Streaming & Fan Systems</h3>
+                    <p class="text-xs text-cyber-muted leading-relaxed mb-6 font-sans">
+                        Hyper-personalized movie stream algorithms, live crowd-synced watch room environments, and real-time interactive audience choices.
+                    </p>
+
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">WebRTC</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Vector Embeddings</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Node.js</span>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-cyber-gold">
+                        <span>INSPECT SPECIFICATIONS</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Track Module 4 -->
+                <div onclick="selectTrackModule(4)" class="hud-glass rounded-2xl p-6 hud-interactive cursor-pointer group border-t-2 border-t-cyber-purple relative" id="track-card-4">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-cyber-purple/10 border border-cyber-purple/40 text-cyber-purple flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i data-lucide="shield-check" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-xs text-cyber-purple font-bold">TRACK_04</span>
+                    </div>
+
+                    <h3 class="font-display text-xl font-bold text-white mb-2 group-hover:text-cyber-purple transition-colors">Decentralized IP & Distribution</h3>
+                    <p class="text-xs text-cyber-muted leading-relaxed mb-6 font-sans">
+                        Smart contract royalty routing for indie film crews, cryptographic watermarking for digital masters, and creator crowdfunding.
+                    </p>
+
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Solidity</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">IPFS</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Zero Knowledge</span>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-cyber-purple">
+                        <span>INSPECT SPECIFICATIONS</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Track Module 5 -->
+                <div onclick="selectTrackModule(5)" class="hud-glass rounded-2xl p-6 hud-interactive cursor-pointer group border-t-2 border-t-blue-400 relative" id="track-card-5">
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/40 text-blue-400 flex items-center justify-center group-hover:scale-110 transition-transform">
+                            <i data-lucide="waveform" class="w-6 h-6"></i>
+                        </div>
+                        <span class="font-mono text-xs text-blue-400 font-bold">TRACK_05</span>
+                    </div>
+
+                    <h3 class="font-display text-xl font-bold text-white mb-2 group-hover:text-blue-400 transition-colors">Neural Audio & Foley Tech</h3>
+                    <p class="text-xs text-cyber-muted leading-relaxed mb-6 font-sans">
+                        Dynamic soundtrack generation reacting to audience heart rate or plot tension, AI sound FX isolation, and audio restoration.
+                    </p>
+
+                    <div class="flex flex-wrap gap-1.5 mb-4">
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">Web Audio API</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">AudioCraft</span>
+                        <span class="px-2 py-0.5 rounded bg-black/60 border border-white/10 text-[10px] font-mono text-gray-300">DSP</span>
+                    </div>
+
+                    <div class="pt-3 border-t border-white/5 flex items-center justify-between text-xs font-mono text-blue-400">
+                        <span>INSPECT SPECIFICATIONS</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </div>
+
+                <!-- Wildcard Deck Module -->
+                <div onclick="selectTrackModule(6)" class="hud-glass rounded-2xl p-6 border-2 border-dashed border-cyber-cyan/30 hover:border-cyber-cyan cursor-pointer group flex flex-col justify-between" id="track-card-6">
+                    <div>
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-xl bg-white/5 border border-white/10 text-white flex items-center justify-center group-hover:scale-110 transition-transform">
+                                <i data-lucide="sparkles" class="w-6 h-6 text-cyber-gold"></i>
+                            </div>
+                            <span class="font-mono text-xs text-cyber-gold font-bold">WILDCARD</span>
+                        </div>
+
+                        <h3 class="font-display text-xl font-bold text-white mb-2">Open Cinematic Wildcard</h3>
+                        <p class="text-xs text-cyber-muted leading-relaxed font-sans mb-4">
+                            Unclassified creative tech concept? If it radically reinvents film production or viewing, submit under Wildcard.
+                        </p>
+                    </div>
+
+                    <button class="w-full py-2.5 bg-cyber-cyan/10 hover:bg-cyber-cyan/20 border border-cyber-cyan/30 text-cyber-cyan font-mono text-xs font-bold rounded-xl transition-colors">
+                        SUBMIT CUSTOM SPEC
+                    </button>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Filmstrip Scrubber Timeline Section -->
+    <section id="film-timeline" class="py-24 bg-black/60 border-y border-cyber-border relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-xs font-mono text-cyber-crimson uppercase tracking-widest mb-2">[ SECTOR 02: SEQUENCE TIMELINE ]</div>
+                <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white">THE 48-HOUR ROADMAP</h2>
+                <p class="text-cyber-muted mt-3 font-sans text-sm">Click any frame thumbnail on the reel below to inspect milestones.</p>
+            </div>
+
+            <!-- Film Reel Container -->
+            <div class="hud-glass rounded-3xl p-6 sm:p-8 relative">
+                
+                <!-- Top Film Sprocket Strip -->
+                <div class="w-full h-6 film-sprocket border-b border-cyber-border mb-8 opacity-60"></div>
+
+                <!-- Timeline Frame Navigation Slider -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4" id="timeline-frames">
+                    
+                    <!-- Frame 1 -->
+                    <div onclick="setActiveFrame(1)" id="frame-card-1" class="p-5 rounded-2xl bg-black/70 border-2 border-cyber-cyan cursor-pointer transition-all hover:brightness-125">
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-cyan mb-3">
+                            <span>FRAME // 01</span>
+                            <span>AUG 23, 2026</span>
+                        </div>
+                        <h4 class="font-display font-bold text-lg text-white mb-2">Registration & Pitch Summary</h4>
+                        <p class="text-xs text-cyber-muted font-sans leading-relaxed">
+                            Submit squad info & 200-word elevator pitch before 11:59 PM EST.
+                        </p>
+                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-cyber-cyan">
+                            <span>STATUS: OPEN</span>
+                            <i data-lucide="check-circle-2" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+
+                    <!-- Frame 2 -->
+                    <div onclick="setActiveFrame(2)" id="frame-card-2" class="p-5 rounded-2xl bg-black/70 border-2 border-white/10 cursor-pointer transition-all hover:border-cyber-gold">
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-gold mb-3">
+                            <span>FRAME // 02</span>
+                            <span>AUG 25, 2026</span>
+                        </div>
+                        <h4 class="font-display font-bold text-lg text-white mb-2">Shortlist & Mentor Match</h4>
+                        <p class="text-xs text-cyber-muted font-sans leading-relaxed">
+                            Top 50 teams shortlisted and paired with Hollywood & AI Studio mentors.
+                        </p>
+                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-cyber-gold">
+                            <span>STATUS: UPCOMING</span>
+                            <i data-lucide="clock" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+
+                    <!-- Frame 3 -->
+                    <div onclick="setActiveFrame(3)" id="frame-card-3" class="p-5 rounded-2xl bg-black/70 border-2 border-white/10 cursor-pointer transition-all hover:border-cyber-purple">
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-purple mb-3">
+                            <span>FRAME // 03</span>
+                            <span>AUG 28-29</span>
+                        </div>
+                        <h4 class="font-display font-bold text-lg text-white mb-2">48-Hour Virtual Hackathon</h4>
+                        <p class="text-xs text-cyber-muted font-sans leading-relaxed">
+                            Sprint build prototypes, debug scripts, refine pitch videos with mentor assistance.
+                        </p>
+                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-cyber-purple">
+                            <span>STATUS: UPCOMING</span>
+                            <i data-lucide="zap" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+
+                    <!-- Frame 4 -->
+                    <div onclick="setActiveFrame(4)" id="frame-card-4" class="p-5 rounded-2xl bg-black/70 border-2 border-white/10 cursor-pointer transition-all hover:border-cyber-crimson">
+                        <div class="flex items-center justify-between text-xs font-mono text-cyber-crimson mb-3">
+                            <span>FRAME // 04</span>
+                            <span>AUG 30, 2026</span>
+                        </div>
+                        <h4 class="font-display font-bold text-lg text-white mb-2">Live Pitch Grand Finale</h4>
+                        <p class="text-xs text-cyber-muted font-sans leading-relaxed">
+                            Top 10 finalists pitch live to venture capitalists and studio heads.
+                        </p>
+                        <div class="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-[10px] font-mono text-cyber-crimson">
+                            <span>STATUS: FINAL DECK</span>
+                            <i data-lucide="trophy" class="w-4 h-4"></i>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Bottom Film Sprocket Strip -->
+                <div class="w-full h-6 film-sprocket border-t border-cyber-border mt-8 opacity-60"></div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- Prize Deck Section -->
+    <section id="prizes" class="py-24 relative z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="text-xs font-mono text-cyber-gold uppercase tracking-widest mb-2">[ SECTOR 03: BOUNTIES & ALLOCATIONS ]</div>
+                <h2 class="font-display text-3xl sm:text-5xl font-extrabold text-white">₹10,000 PRIZE POOL</h2>
+                <p class="text-cyber-muted mt-3 font-sans text-sm">Direct venture access, cloud compute credits, and incubator backing.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
+                
+                <!-- 2nd Place -->
+                <div class="hud-glass rounded-3xl p-8 border border-white/10 flex flex-col justify-between order-2 md:order-1 hover:border-cyber-cyan transition-all">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-gray-500/10 border border-gray-400/30 text-gray-300 flex items-center justify-center font-bold text-xl mb-6">
+                            🥈
+                        </div>
+                        <div class="text-xs font-mono text-cyber-muted">TIER // SECOND RUNNER</div>
+                        <h3 class="font-display text-2xl font-bold text-white mt-1 mb-2">Silver Reel</h3>
+                        <div class="text-3xl font-extrabold font-display text-white mb-6">₹3,000 <span class="text-xs font-mono text-cyber-muted font-normal">INR</span></div>
+                        
+                        <ul class="space-y-3 text-xs font-sans text-cyber-muted">
+                            <li class="flex items-center gap-2 text-gray-300"><i data-lucide="check-circle" class="w-4 h-4 text-cyber-cyan"></i> 1-on-1 Studio Mentorship Hours</li>
+                            <li class="flex items-center gap-2 text-gray-300"><i data-lucide="check-circle" class="w-4 h-4 text-cyber-cyan"></i> ₹1,500 Cloud GPU Compute Credits</li>
+                            <li class="flex items-center gap-2 text-gray-300"><i data-lucide="check-circle" class="w-4 h-4 text-cyber-cyan"></i> Official Certificate of Distinction</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 1st Place (Featured Grand Champion) -->
+                <div class="hud-glass rounded-3xl p-8 border-2 border-cyber-gold relative shadow-2xl shadow-cyber-gold/20 flex flex-col justify-between order-1 md:order-2 transform md:-translate-y-4 holo-card">
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-cyber-gold text-black text-[10px] font-mono font-bold uppercase tracking-widest px-4 py-1 rounded-full shadow-lg">
+                        GRAND CHAMPION
+                    </div>
+                    <div>
+                        <div class="w-16 h-16 rounded-2xl bg-cyber-gold/20 border border-cyber-gold text-cyber-gold flex items-center justify-center font-bold text-3xl mb-6">
+                            🏆
+                        </div>
+                        <div class="text-xs font-mono text-cyber-gold">TIER // VICTOR</div>
+                        <h3 class="font-display text-3xl font-bold text-white mt-1 mb-2">Golden Aperture</h3>
+                        <div class="text-4xl font-extrabold font-display text-cyber-gold mb-6">₹5,000 <span class="text-xs font-mono text-white font-normal">INR</span></div>
+                        
+                        <ul class="space-y-3 text-xs font-sans text-gray-200">
+                            <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyber-gold"></i> Pitch Deck Review by Media VCs</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyber-gold"></i> ₹5,000 Cloud & AI Tool Vouchers</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyber-gold"></i> 6-Month Incubator Accelerator Access</li>
+                            <li class="flex items-center gap-2"><i data-lucide="check-circle-2" class="w-4 h-4 text-cyber-gold"></i> Featured Slot at Cinephix Expo 2026</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 3rd Place -->
+                <div class="hud-glass rounded-3xl p-8 border border-white/10 flex flex-col justify-between order-3 hover:border-cyber-crimson transition-all">
+                    <div>
+                        <div class="w-12 h-12 rounded-2xl bg-amber-700/20 border border-amber-600/30 text-amber-500 flex items-center justify-center font-bold text-xl mb-6">
+                            🥉
+                        </div>
+                        <div class="text-xs font-mono text-cyber-muted">TIER // THIRD RUNNER</div>
+                        <h3 class="font-display text-2xl font-bold text-white mt-1 mb-2">Bronze Lens</h3>
+                        <div class="text-3xl font-extrabold font-display text-white mb-6">₹2,000 <span class="text-xs font-mono text-cyber-muted font-normal">INR</span></div>
+                        
+                        <ul class="space-y-3 text-xs font-sans text-cyber-muted">
+                            <li class="flex items-center gap-2 text-gray-300"><i data-lucide="check-circle" class="w-4 h-4 text-cyber-crimson"></i> Technical Advisory Workshops</li>
+                            <li class="flex items-center gap-2 text-gray-300"><i data-lucide="check-circle" class="w-4 h-4 text-cyber-crimson"></i> ₹800 AI Tool Perks</li>
+                            <li class="flex items-center gap-2 text-gray-300"><i data-lucide="check-circle" class="w-4 h-4 text-cyber-crimson"></i> Official Digital Certificate</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-20 bg-black/40 border-t border-cyber-border relative z-10">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="text-center mb-12">
+                <div class="text-xs font-mono text-cyber-cyan uppercase tracking-widest mb-2">[ SECTOR 04: PROTOCOL QUERY ]</div>
+                <h2 class="font-display text-3xl font-bold text-white">FREQUENTLY ASKED QUESTIONS</h2>
+            </div>
+
+            <div class="space-y-4">
+                
+                <div class="hud-glass rounded-2xl overflow-hidden border border-white/10">
+                    <button onclick="toggleFaqAccordion(1)" class="w-full px-6 py-4 text-left font-mono text-sm text-white flex justify-between items-center hover:bg-cyber-cyan/5 transition-colors">
+                        <span>[Q1] Who is eligible to enter Cinephix 2026?</span>
+                        <i id="faq-arrow-1" data-lucide="chevron-down" class="w-4 h-4 text-cyber-cyan transition-transform"></i>
+                    </button>
+                    <div id="faq-content-1" class="hidden px-6 pb-4 text-xs font-sans text-cyber-muted leading-relaxed">
+                        Open globally to developers, filmmakers, AI engineers, sound designers, students, and indie creative teams. Teams up to 4 members are supported.
+                    </div>
+                </div>
+
+                <div class="hud-glass rounded-2xl overflow-hidden border border-white/10">
+                    <button onclick="toggleFaqAccordion(2)" class="w-full px-6 py-4 text-left font-mono text-sm text-white flex justify-between items-center hover:bg-cyber-cyan/5 transition-colors">
+                        <span>[Q2] What are the registration fees?</span>
+                        <i id="faq-arrow-2" data-lucide="chevron-down" class="w-4 h-4 text-cyber-cyan transition-transform"></i>
+                    </button>
+                    <div id="faq-content-2" class="hidden px-6 pb-4 text-xs font-sans text-cyber-muted leading-relaxed">
+                        Cinephix 2026 registration is 100% free of charge for all accepted applicants.
+                    </div>
+                </div>
+
+                <div class="hud-glass rounded-2xl overflow-hidden border border-white/10">
+                    <button onclick="toggleFaqAccordion(3)" class="w-full px-6 py-4 text-left font-mono text-sm text-white flex justify-between items-center hover:bg-cyber-cyan/5 transition-colors">
+                        <span>[Q3] Can I participate as a solo developer or filmmaker?</span>
+                        <i id="faq-arrow-3" data-lucide="chevron-down" class="w-4 h-4 text-cyber-cyan transition-transform"></i>
+                    </button>
+                    <div id="faq-content-3" class="hidden px-6 pb-4 text-xs font-sans text-cyber-muted leading-relaxed">
+                        Yes! Solo creators are welcomed. We also host a team-matching Discord server prior to frame 01.
+                    </div>
+                </div>
+
+                <div class="hud-glass rounded-2xl overflow-hidden border border-white/10">
+                    <button onclick="toggleFaqAccordion(4)" class="w-full px-6 py-4 text-left font-mono text-sm text-white flex justify-between items-center hover:bg-cyber-cyan/5 transition-colors">
+                        <span>[Q4] What deliverables are required by August 23?</span>
+                        <i id="faq-arrow-4" data-lucide="chevron-down" class="w-4 h-4 text-cyber-cyan transition-transform"></i>
+                    </button>
+                    <div id="faq-content-4" class="hidden px-6 pb-4 text-xs font-sans text-cyber-muted leading-relaxed">
+                        A team roster, track selection, and a 200-word concept pitch summarizing the problem and proposed tech solution.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    <!-- Registration Console Modal -->
+    <div id="reg-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-xl overflow-y-auto">
+        <div class="relative w-full max-w-4xl hud-glass rounded-3xl border border-cyber-cyan/40 p-6 sm:p-8 shadow-2xl my-8">
+            
+            <!-- Close Modal Button -->
+            <button onclick="closeRegistrationModal()" class="absolute top-5 right-5 text-cyber-muted hover:text-white p-2 rounded-xl hover:bg-white/10 transition-colors">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+
+            <!-- Console Header -->
+            <div class="mb-6 flex items-center justify-between border-b border-cyber-cyan/20 pb-4">
+                <div>
+                    <div class="text-xs font-mono text-cyber-cyan uppercase tracking-widest mb-1 flex items-center gap-2">
+                        <i data-lucide="terminal" class="w-4 h-4"></i> CINEPHIX_SQUAD_TERMINAL
+                    </div>
+                    <h3 class="font-display text-2xl sm:text-3xl font-bold text-white">TEAM REGISTRATION</h3>
+                </div>
+                <div class="hidden sm:block text-right font-mono text-[10px] text-cyber-muted">
+                    <div>DEADLINE: AUG 23, 2026</div>
+                    <div class="text-cyber-gold">STATUS: ONLINE</div>
+                </div>
+            </div>
+
+            <!-- Two Column Layout: Left Form Inputs, Right Live Holographic Badge Preview -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8" id="modal-form-body">
+                
+                <!-- Left Column: Form -->
+                <form id="registration-form" onsubmit="submitRegistration(event)" class="lg:col-span-7 space-y-4">
+                    
+                    <!-- Track Selection -->
+                    <div>
+                        <label class="block text-xs font-mono text-cyber-muted uppercase mb-1">Target Track Sector *</label>
+                        <select id="input-track" required onchange="updateHoloBadge()" class="w-full px-4 py-3 bg-black/80 border border-cyber-border rounded-xl text-white focus:border-cyber-cyan focus:outline-none text-xs font-mono">
+                            <option value="AI Pre & Post-Production">Track 01: AI Pre & Post-Production</option>
+                            <option value="Interactive & Spatial Cinema">Track 02: Interactive & Spatial Cinema</option>
+                            <option value="Smart Streaming">Track 03: Smart Streaming & Fan Systems</option>
+                            <option value="Decentralized Film IP">Track 04: Decentralized Film IP & Tech</option>
+                            <option value="Neural Audio & Foley">Track 05: Neural Audio & Foley Tech</option>
+                            <option value="Open Wildcard Track">Open Wildcard Sector</option>
+                        </select>
+                    </div>
+
+                    <!-- Team Name & Size -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-mono text-cyber-muted uppercase mb-1">Squad Identifier *</label>
+                            <input type="text" id="input-team-name" required placeholder="e.g. CyberLens Labs" oninput="updateHoloBadge()" class="w-full px-4 py-2.5 bg-black/80 border border-cyber-border rounded-xl text-white focus:border-cyber-cyan focus:outline-none text-xs font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-mono text-cyber-muted uppercase mb-1">Squad Member Count *</label>
+                            <select id="input-team-size" required onchange="updateTeamFields()" class="w-full px-4 py-2.5 bg-black/80 border border-cyber-border rounded-xl text-white focus:border-cyber-cyan focus:outline-none text-xs font-mono">
+                                <option value="1">1 Member (Solo)</option>
+                                <option value="2">2 Members</option>
+                                <option value="3">3 Members</option>
+                                <option value="4" selected>4 Members</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Squad Leader Block -->
+                    <div class="p-3.5 rounded-xl bg-black/60 border border-cyber-border space-y-2">
+                        <div class="text-[11px] font-mono text-cyber-gold font-bold flex items-center gap-1.5">
+                            <i data-lucide="user-check" class="w-3.5 h-3.5"></i> LEADER / PRIMARY CONTACT
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input type="text" id="input-leader-name" required placeholder="Full Name *" oninput="updateHoloBadge()" class="w-full px-3 py-2 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
+                            <input type="email" required placeholder="Email Address *" class="w-full px-3 py-2 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Additional Members Container -->
+                    <div id="additional-members-container" class="space-y-2">
+                        <!-- Populated dynamically -->
+                    </div>
+
+                    <!-- Pitch Concept -->
+                    <div>
+                        <label class="block text-xs font-mono text-cyber-muted uppercase mb-1">Concept Abstract (Max 200 Words) *</label>
+                        <textarea required rows="3" placeholder="Outline the cinematic technical challenge and proposed solution..." class="w-full px-4 py-2.5 bg-black/80 border border-cyber-border rounded-xl text-white focus:border-cyber-cyan focus:outline-none text-xs font-mono"></textarea>
+                    </div>
+
+                    <!-- Submit CTA -->
+                    <button type="submit" class="w-full py-3.5 bg-cyber-cyan hover:bg-white text-black font-mono font-bold text-xs uppercase tracking-wider rounded-xl shadow-lg shadow-cyber-cyan/30 transition-all flex items-center justify-center gap-2">
+                        <i data-lucide="send" class="w-4 h-4"></i> SUBMIT SQUAD APPLICATION
+                    </button>
+                </form>
+
+                <!-- Right Column: Live Holographic Squad Pass Ticket Widget -->
+                <div class="lg:col-span-5 flex flex-col justify-center">
+                    <div class="text-xs font-mono text-cyber-muted text-center mb-2">[ LIVE HOLOGRAM BADGE PREVIEW ]</div>
+                    
+                    <div class="holo-card rounded-2xl p-6 border border-cyber-cyan/40 shadow-xl relative text-left">
+                        
+                        <div class="flex items-center justify-between border-b border-white/10 pb-3 mb-4">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="aperture" class="w-5 h-5 text-cyber-cyan"></i>
+                                <span class="font-display font-extrabold text-white text-sm">CINEPHIX '26</span>
+                            </div>
+                            <span class="text-[10px] font-mono text-cyber-crimson font-bold">PASS_TYPE // CREATOR</span>
+                        </div>
+
+                        <!-- Squad Name Display -->
+                        <div class="mb-3">
+                            <div class="text-[9px] font-mono text-cyber-muted uppercase">SQUAD NAME</div>
+                            <div id="badge-team-name" class="font-display text-lg font-bold text-cyber-cyan truncate">CyberLens Labs</div>
+                        </div>
+
+                        <!-- Leader Display -->
+                        <div class="mb-3">
+                            <div class="text-[9px] font-mono text-cyber-muted uppercase">SQUAD LEADER</div>
+                            <div id="badge-leader-name" class="font-mono text-xs text-white truncate">Alex Mercer</div>
+                        </div>
+
+                        <!-- Selected Track -->
+                        <div class="mb-4">
+                            <div class="text-[9px] font-mono text-cyber-muted uppercase">SELECTED TRACK</div>
+                            <div id="badge-track-name" class="font-mono text-xs text-cyber-gold truncate">AI Pre & Post-Production</div>
+                        </div>
+
+                        <!-- Barcode Simulation -->
+                        <div class="bg-black/80 p-3 rounded-lg border border-white/10 flex items-center justify-between">
+                            <div class="space-y-1">
+                                <div class="text-[8px] font-mono text-cyber-muted">VERIFICATION HASH</div>
+                                <div id="badge-hash" class="text-[10px] font-mono text-cyber-cyan">CPX-2026-X89</div>
+                            </div>
+                            <i data-lucide="qr-code" class="w-8 h-8 text-white"></i>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Submission Success View (Hidden by default) -->
+            <div id="modal-success-screen" class="hidden text-center py-12">
+                <div class="w-16 h-16 rounded-2xl bg-cyber-cyan/20 border border-cyber-cyan text-cyber-cyan flex items-center justify-center mx-auto mb-4 animate-bounce">
+                    <i data-lucide="check-circle" class="w-8 h-8"></i>
+                </div>
+                <h3 class="font-display text-3xl font-bold text-white mb-2">APPLICATION TRANSMITTED</h3>
+                <p class="text-xs font-mono text-cyber-muted max-w-md mx-auto mb-6">
+                    Your team registration pass has been successfully verified and stored in the Cinephix 2026 registry.
+                </p>
+                <div class="p-4 rounded-2xl bg-black/80 border border-cyber-cyan/30 inline-block text-left mb-6 font-mono">
+                    <div class="text-[10px] text-cyber-muted">YOUR REGISTERED PASS CODE:</div>
+                    <div id="generated-pass-code" class="text-2xl font-bold text-cyber-gold tracking-widest my-1">CPX-9941-SYS</div>
+                    <div class="text-[10px] text-gray-400">Confirmation email dispatched to squad leader.</div>
+                </div>
+                <div>
+                    <button onclick="closeRegistrationModal()" class="px-8 py-3 bg-cyber-cyan text-black font-mono font-bold text-xs rounded-xl hover:bg-white transition-colors">
+                        RETURN TO HUB
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Cyber Footer -->
+    <footer class="py-12 border-t border-cyber-border hud-glass relative z-10 font-mono text-xs text-cyber-muted">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <i data-lucide="aperture" class="w-4 h-4 text-cyber-cyan"></i>
+                <span class="text-white font-bold">CINEPHIX 2026</span>
+                <span>// GLOBAL CINEMA TECH IDEATHON</span>
+            </div>
+
+            <div class="text-center">
+                REGISTRATION DEADLINE: <span class="text-white">AUGUST 23, 2026</span>
+            </div>
+
+            <div class="flex gap-4 text-cyber-cyan">
+                <a href="#" onclick="playAudio('hover')" class="hover:text-white"><i data-lucide="twitter" class="w-4 h-4"></i></a>
+                <a href="#" onclick="playAudio('hover')" class="hover:text-white"><i data-lucide="github" class="w-4 h-4"></i></a>
+                <a href="#" onclick="playAudio('hover')" class="hover:text-white"><i data-lucide="disc" class="w-4 h-4"></i></a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Native Web Audio API Synthesizer for UI Effects
+        let audioCtx = null;
+        let isAudioMuted = true;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+        }
+
+        function playAudio(type) {
+            if (isAudioMuted) return;
+            try {
+                initAudio();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                const now = audioCtx.currentTime;
+
+                if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(800, now);
+                    osc.frequency.exponentialRampToValueAtTime(300, now + 0.08);
+                    gain.gain.setValueAtTime(0.15, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                    osc.start(now);
+                    osc.stop(now + 0.08);
+                } else if (type === 'hover') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(400, now);
+                    gain.gain.setValueAtTime(0.03, now);
+                    gain.gain.linearRampToValueAtTime(0.001, now + 0.04);
+                    osc.start(now);
+                    osc.stop(now + 0.04);
+                } else if (type === 'success') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, now);
+                    osc.frequency.setValueAtTime(659.25, now + 0.1);
+                    osc.frequency.setValueAtTime(783.99, now + 0.2);
+                    gain.gain.setValueAtTime(0.1, now);
+                    gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
+                    osc.start(now);
+                    osc.stop(now + 0.35);
+                }
+            } catch (e) {
+                console.warn('Audio Context error:', e);
+            }
+        }
+
+        function toggleAudio() {
+            isAudioMuted = !isAudioMuted;
+            const btnIcon = document.getElementById('sound-icon');
+            if (isAudioMuted) {
+                btnIcon.setAttribute('data-lucide', 'volume-x');
+            } else {
+                btnIcon.setAttribute('data-lucide', 'volume-2');
+                playAudio('click');
+            }
+            lucide.createIcons();
+        }
+
+        // Live Timecode Ticker (00:00:00:00)
+        function updateTimecode() {
+            const date = new Date();
+            const h = String(date.getHours()).padStart(2, '0');
+            const m = String(date.getMinutes()).padStart(2, '0');
+            const s = String(date.getSeconds()).padStart(2, '0');
+            const f = String(Math.floor(date.getMilliseconds() / 40)).padStart(2, '0');
+            const ticker = document.getElementById('timecode-ticker');
+            if (ticker) ticker.innerText = `${h}:${m}:${s}:${f}`;
+        }
+        setInterval(updateTimecode, 40);
+
+        // Countdown Timer Logic
+        const deadlineDate = new Date("2026-08-23T23:59:59").getTime();
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const diff = deadlineDate - now;
+
+            if (diff > 0) {
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+                document.getElementById('days').innerText = String(d).padStart(2, '0');
+                document.getElementById('hours').innerText = String(h).padStart(2, '0');
+                document.getElementById('minutes').innerText = String(m).padStart(2, '0');
+                document.getElementById('seconds').innerText = String(s).padStart(2, '0');
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        // Track Card Click Inspector
+        function selectTrackModule(id) {
+            playAudio('click');
+            openRegistrationModal();
+            const selectEl = document.getElementById('input-track');
+            if (selectEl) {
+                selectEl.selectedIndex = id - 1;
+                updateHoloBadge();
+            }
+        }
+
+        // Timeline Frame Active Switcher
+        function setActiveFrame(index) {
+            playAudio('click');
+            for (let i = 1; i <= 4; i++) {
+                const card = document.getElementById(`frame-card-${i}`);
+                if (card) {
+                    if (i === index) {
+                        card.className = "p-5 rounded-2xl bg-black/90 border-2 border-cyber-cyan cursor-pointer transition-all scale-105 shadow-xl shadow-cyber-cyan/20";
+                    } else {
+                        card.className = "p-5 rounded-2xl bg-black/70 border-2 border-white/10 cursor-pointer transition-all opacity-60 hover:opacity-100";
+                    }
+                }
+            }
+        }
+
+        // FAQ Accordion Handler
+        function toggleFaqAccordion(id) {
+            playAudio('click');
+            const content = document.getElementById(`faq-content-${id}`);
+            const arrow = document.getElementById(`faq-arrow-${id}`);
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                arrow.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Registration Modal Logic
+        function openRegistrationModal() {
+            playAudio('click');
+            document.getElementById('reg-modal').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+            updateTeamFields();
+            updateHoloBadge();
+        }
+
+        function closeRegistrationModal() {
+            playAudio('click');
+            document.getElementById('reg-modal').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Dynamic Additional Team Member Form Generator
+        function updateTeamFields() {
+            const size = parseInt(document.getElementById('input-team-size').value);
+            const container = document.getElementById('additional-members-container');
+            container.innerHTML = '';
+
+            for (let i = 2; i <= size; i++) {
+                const memberBox = document.createElement('div');
+                memberBox.className = 'p-3 rounded-xl bg-black/40 border border-white/10 space-y-1.5';
+                memberBox.innerHTML = `
+                    <div class="text-[10px] font-mono text-cyber-cyan">MEMBER // 0${i}</div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        <input type="text" required placeholder="Member ${i} Name *" class="w-full px-3 py-1.5 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
+                        <input type="email" required placeholder="Member ${i} Email *" class="w-full px-3 py-1.5 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
+                    </div>
+                `;
+                container.appendChild(memberBox);
+            }
+        }
+
+        // Update Live Hologram Badge Preview
+        function updateHoloBadge() {
+            const teamName = document.getElementById('input-team-name').value || "CyberLens Labs";
+            const leaderName = document.getElementById('input-leader-name').value || "Alex Mercer";
+            const trackSelect = document.getElementById('input-track');
+            const trackName = trackSelect ? trackSelect.options[trackSelect.selectedIndex].text : "AI Pre & Post-Production";
+
+            document.getElementById('badge-team-name').innerText = teamName;
+            document.getElementById('badge-leader-name').innerText = leaderName;
+            document.getElementById('badge-track-name').innerText = trackName;
+        }
+
+        // Form Submit Handler
+        function submitRegistration(event) {
+            event.preventDefault();
+            playAudio('success');
+
+            const randomPass = 'CPX-' + Math.floor(1000 + Math.random() * 9000) + '-SYS';
+            document.getElementById('generated-pass-code').innerText = randomPass;
+
+            document.getElementById('modal-form-body').classList.add('hidden');
+            document.getElementById('modal-success-screen').classList.remove('hidden');
+
+            // Increment count display
+            const countEl = document.getElementById('app-count');
+            if (countEl) {
+                countEl.innerText = parseInt(countEl.innerText) + 1;
+            }
+        }
+
+        // Canvas Lens Flare & Dynamic Particle Canvas
+        const canvas = document.getElementById('cinema-canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        let mouse = { x: width / 2, y: height / 2 };
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.clientX;
+            mouse.y = e.clientY;
+        });
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 2 + 0.5;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.alpha = Math.random() * 0.6 + 0.2;
+                this.color = Math.random() > 0.5 ? '#00F0FF' : '#FF0055';
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+
+                if (this.x < 0 || this.x > width || this.y < 0 || this.y > height) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.alpha;
+                ctx.fill();
+            }
+        }
+
+        const particles = Array.from({ length: 65 }, () => new Particle());
+
+        function animateCanvas() {
+            ctx.clearRect(0, 0, width, height);
+
+            // Anamorphic Lens Flare Line following mouse
+            if (width > 0 && height > 0) {
+                ctx.beginPath();
+                ctx.moveTo(0, mouse.y);
+                ctx.lineTo(width, mouse.y);
+                const grad = ctx.createLinearGradient(0, 0, width, 0);
+                grad.addColorStop(0, 'rgba(0,240,255,0)');
+
+                // Ensure the stop position is a finite number between 0 and 1
+                let stopPos = mouse.x / width;
+                if (!isFinite(stopPos) || isNaN(stopPos)) stopPos = 0.5;
+                stopPos = Math.max(0, Math.min(1, stopPos));
+
+                grad.addColorStop(stopPos, 'rgba(0,240,255,0.25)');
+                grad.addColorStop(1, 'rgba(0,240,255,0)');
+                ctx.strokeStyle = grad;
+                ctx.lineWidth = 1.5;
+                ctx.globalAlpha = 0.8;
+                ctx.stroke();
+            }
+
+            // Render Particles
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+
+            requestAnimationFrame(animateCanvas);
+        }
+
+        window.onload = function() {
+            animateCanvas();
+        }
+    </script>
+</body>
+</html>
