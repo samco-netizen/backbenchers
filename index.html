@@ -71,6 +71,51 @@
         .font-display { font-family: 'Space Grotesk', sans-serif; }
         .font-mono { font-family: 'JetBrains Mono', monospace; }
 
+        /* Custom Cyber Cursor Styles */
+        @media (pointer: fine) {
+            body, a, button, input, select, textarea {
+                cursor: none !important;
+            }
+        }
+
+        #cyber-cursor-ring {
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+            will-change: transform;
+        }
+
+        #cyber-cursor-ring.cursor-hover {
+            width: 48px;
+            height: 48px;
+            border-color: #FF0055;
+            background: rgba(255, 0, 85, 0.1);
+            box-shadow: 0 0 25px rgba(255, 0, 85, 0.6);
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+
+        #cyber-cursor-dot.cursor-hover {
+            background-color: #FF0055;
+            transform: translate(-50%, -50%) scale(1.5);
+        }
+
+        .cursor-click-ripple {
+            animation: cursorRipple 0.5s ease-out forwards;
+        }
+
+        @keyframes cursorRipple {
+            0% {
+                width: 10px;
+                height: 10px;
+                opacity: 0.9;
+                border: 2px solid #00F0FF;
+            }
+            100% {
+                width: 60px;
+                height: 60px;
+                opacity: 0;
+                border: 1px solid #FF0055;
+            }
+        }
+
         /* HUD Glassmorphism */
         .hud-glass {
             background: rgba(11, 13, 20, 0.75);
@@ -139,6 +184,16 @@
     </style>
 </head>
 <body class="selection:bg-cyber-cyan selection:text-black antialiased">
+
+    <!-- Dynamic Cyber-Cinematic Reticle Cursor -->
+    <div id="cyber-cursor-dot" class="fixed top-0 left-0 w-2 h-2 rounded-full bg-cyber-cyan pointer-events-none z-[100] -translate-x-1/2 -translate-y-1/2 transition-colors duration-200"></div>
+    <div id="cyber-cursor-ring" class="fixed top-0 left-0 w-8 h-8 rounded-full border border-cyber-cyan/70 pointer-events-none z-[99] -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-150 ease-out">
+        <!-- Reticle Corner Ticks -->
+        <span class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-0.5 bg-cyber-cyan"></span>
+        <span class="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-1 h-0.5 bg-cyber-cyan"></span>
+        <span class="absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-1 bg-cyber-cyan"></span>
+        <span class="absolute right-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-0.5 h-1 bg-cyber-cyan"></span>
+    </div>
 
     <!-- Interactive Anamorphic Lens & Particle Canvas -->
     <canvas id="cinema-canvas" class="fixed inset-0 pointer-events-none z-0 opacity-70"></canvas>
@@ -619,7 +674,7 @@
                         <div class="w-16 h-16 rounded-2xl bg-cyber-gold/20 border border-cyber-gold text-cyber-gold flex items-center justify-center font-bold text-3xl mb-6">
                             🏆
                         </div>
-                        <div class="text-xs font-mono text-cyber-gold">TIER // FIRST WINNER</div>
+                        <div class="text-xs font-mono text-cyber-gold">TIER // VICTOR</div>
                         <h3 class="font-display text-3xl font-bold text-white mt-1 mb-2">Golden Aperture</h3>
                         <div class="text-4xl font-extrabold font-display text-cyber-gold mb-6">₹5,000 <span class="text-xs font-mono text-white font-normal">INR</span></div>
                         
@@ -775,7 +830,7 @@
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             <input type="text" id="input-leader-name" required placeholder="Full Name *" oninput="updateHoloBadge()" class="w-full px-3 py-2 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
-                            <input type="email" id="input-leader-email" required placeholder="Email Address *" class="w-full px-3 py-2 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
+                            <input type="email" required placeholder="Email Address *" class="w-full px-3 py-2 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
                         </div>
                     </div>
 
@@ -787,7 +842,7 @@
                     <!-- Pitch Concept -->
                     <div>
                         <label class="block text-xs font-mono text-cyber-muted uppercase mb-1">Concept Abstract (Max 200 Words) *</label>
-                        <textarea id="input-concept" required rows="3" placeholder="Outline the cinematic technical challenge and proposed solution..." class="w-full px-4 py-2.5 bg-black/80 border border-cyber-border rounded-xl text-white focus:border-cyber-cyan focus:outline-none text-xs font-mono"></textarea>
+                        <textarea required rows="3" placeholder="Outline the cinematic technical challenge and proposed solution..." class="w-full px-4 py-2.5 bg-black/80 border border-cyber-border rounded-xl text-white focus:border-cyber-cyan focus:outline-none text-xs font-mono"></textarea>
                     </div>
 
                     <!-- Submit CTA -->
@@ -1055,8 +1110,8 @@
                 memberBox.innerHTML = `
                     <div class="text-[10px] font-mono text-cyber-cyan">MEMBER // 0${i}</div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                        <input type="text" required placeholder="Member ${i} Name *" class="member-name-input w-full px-3 py-1.5 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
-                        <input type="email" required placeholder="Member ${i} Email *" class="member-email-input w-full px-3 py-1.5 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
+                        <input type="text" required placeholder="Member ${i} Name *" class="w-full px-3 py-1.5 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
+                        <input type="email" required placeholder="Member ${i} Email *" class="w-full px-3 py-1.5 bg-black/90 border border-white/10 rounded-lg text-white text-xs font-mono focus:border-cyber-cyan focus:outline-none">
                     </div>
                 `;
                 container.appendChild(memberBox);
@@ -1075,40 +1130,10 @@
             document.getElementById('badge-track-name').innerText = trackName;
         }
 
-        // Google Apps Script Web App URL — paste your deployment URL here
-        const SHEET_ENDPOINT = 'https://script.google.com/macros/s/AKfycby7im4qHJwR5w69f19hVu9rWkBQPn957go9IL6mdMIJWKTIxxuayjG3iO6WoMdej1Sr/exec';
-
         // Form Submit Handler
         function submitRegistration(event) {
             event.preventDefault();
             playAudio('success');
-
-            // Gather main fields
-            const track = document.getElementById('input-track').value;
-            const teamName = document.getElementById('input-team-name').value;
-            const teamSize = document.getElementById('input-team-size').value;
-            const leaderName = document.getElementById('input-leader-name').value;
-            const leaderEmail = document.getElementById('input-leader-email').value;
-            const concept = document.getElementById('input-concept').value;
-
-            // Gather any dynamically added additional squad members
-            const memberNames = Array.from(document.querySelectorAll('.member-name-input')).map(el => el.value);
-            const memberEmails = Array.from(document.querySelectorAll('.member-email-input')).map(el => el.value);
-            const additionalMembers = memberNames
-                .map((name, i) => name ? `${name} (${memberEmails[i] || 'no email'})` : null)
-                .filter(Boolean)
-                .join('; ');
-
-            const payload = { track, teamName, teamSize, leaderName, leaderEmail, concept, additionalMembers };
-
-            fetch(SHEET_ENDPOINT, {
-                method: 'POST',
-                mode: 'no-cors', // Apps Script doesn't send CORS headers back
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify(payload)
-            }).catch(() => {
-                console.warn('Could not reach the registration server — check your connection.');
-            });
 
             const randomPass = 'CPX-' + Math.floor(1000 + Math.random() * 9000) + '-SYS';
             document.getElementById('generated-pass-code').innerText = randomPass;
@@ -1209,6 +1234,68 @@
         window.onload = function() {
             animateCanvas();
         }
+
+        // Cyber Interactive Cursor Tracking
+        const cursorDot = document.getElementById('cyber-cursor-dot');
+        const cursorRing = document.getElementById('cyber-cursor-ring');
+
+        let targetX = window.innerWidth / 2;
+        let targetY = window.innerHeight / 2;
+        let currentX = targetX;
+        let currentY = targetY;
+
+        window.addEventListener('mousemove', (e) => {
+            targetX = e.clientX;
+            targetY = e.clientY;
+
+            // Instantly update inner dot for zero input latency
+            if (cursorDot) {
+                cursorDot.style.left = `${targetX}px`;
+                cursorDot.style.top = `${targetY}px`;
+            }
+        });
+
+        // Smooth Lerp Loop for Reticle Ring
+        function renderCursor() {
+            currentX += (targetX - currentX) * 0.25;
+            currentY += (targetY - currentY) * 0.25;
+
+            if (cursorRing) {
+                cursorRing.style.left = `${currentX}px`;
+                cursorRing.style.top = `${currentY}px`;
+            }
+            requestAnimationFrame(renderCursor);
+        }
+        renderCursor();
+
+        // Click Shockwave Ripple Effect
+        window.addEventListener('click', (e) => {
+            const ripple = document.createElement('div');
+            ripple.className = 'fixed rounded-full pointer-events-none z-[98] -translate-x-1/2 -translate-y-1/2 cursor-click-ripple';
+            ripple.style.left = `${e.clientX}px`;
+            ripple.style.top = `${e.clientY}px`;
+            document.body.appendChild(ripple);
+
+            setTimeout(() => {
+                ripple.remove();
+            }, 500);
+        });
+
+        // Hover Target Detection on Interactive UI Elements
+        function setupCursorHoverListeners() {
+            const hoverables = document.querySelectorAll('a, button, input, select, textarea, .hud-interactive, [onclick]');
+            hoverables.forEach(el => {
+                el.addEventListener('mouseenter', () => {
+                    cursorRing.classList.add('cursor-hover');
+                    cursorDot.classList.add('cursor-hover');
+                });
+                el.addEventListener('mouseleave', () => {
+                    cursorRing.classList.remove('cursor-hover');
+                    cursorDot.classList.remove('cursor-hover');
+                });
+            });
+        }
+        setupCursorHoverListeners();
     </script>
 </body>
 </html>
